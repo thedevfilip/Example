@@ -1,3 +1,4 @@
+using Example.Api.Features.Users.Login;
 using Example.Api.Features.Users.Registration;
 using Example.Domain.Entities;
 using Example.Infrastructure;
@@ -25,6 +26,7 @@ public static class DependencyInjection
         services.AddAuthorization();
 
         services.AddScoped<RegisterUserHandler>();
+        services.AddScoped<LoginUserHandler>();
 
         return services;
     }

@@ -1,4 +1,5 @@
 using Example.Api;
+using Example.Api.Features.Users.Login;
 using Example.Api.Features.Users.Registration;
 using Example.Infrastructure;
 
@@ -17,5 +18,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRegisterUser();
+app.MapLoginUser();
 
 app.Run();
