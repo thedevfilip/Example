@@ -1,0 +1,28 @@
+using Example.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+
+namespace Example.Api.Features.Users.Registration;
+
+public sealed class RegisterUserHandler(UserManager<User> userManager)
+{
+    private readonly UserManager<User> _userManager = userManager;
+
+    public async Task<RegisterUserResponse?> HandleAsync(RegisterUserRequest request)
+    {
+        var user = new User
+        {
+            UserName = request.Email,
+            Email = request.Email,
+            FirstName = request.FirstName,
+            LastName = request.LastName
+        };
+
+        // TODO: Print errors if creation fails
+        var result = await _userManager.CreateAsync(user, request.Password);
+
+        if (!result.Succeeded)
+            return null;
+
+        return new RegisterUserResponse(user.Id, user.Email!);
+    }
+}
