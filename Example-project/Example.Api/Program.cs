@@ -1,4 +1,5 @@
 using Example.Api;
+using Example.Api.Features.Users.Info;
 using Example.Api.Features.Users.Login;
 using Example.Api.Features.Users.Registration;
 using Example.Infrastructure;
@@ -14,11 +15,11 @@ services.AddPresentation(configuration);
 var app = builder.Build();
 
 app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapRegisterUser();
 app.MapLoginUser();
+app.MapUserInfo();
 
 app.Run();
