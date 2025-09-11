@@ -11,6 +11,7 @@ public static class LoginUserEndpoint
             [FromBody] LoginUserRequest request) =>
         {
             var response = await handler.HandleAsync(request);
+            
             return response is not null
                 ? Results.Ok(response)
                 : Results.BadRequest("Invalid credentials.");

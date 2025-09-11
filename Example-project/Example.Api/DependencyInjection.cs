@@ -1,5 +1,6 @@
 using Example.Api.Features.Users.Login;
 using Example.Api.Features.Users.Registration;
+using Example.Api.Options;
 using Example.Domain.Entities;
 using Example.Infrastructure;
 using Microsoft.AspNetCore.Identity;
@@ -8,8 +9,10 @@ namespace Example.Api;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPresentation(this IServiceCollection services)
+    public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<JwtOptions>(configuration.GetSection(Constants.Jwt));
+        
         services.AddIdentity<User, IdentityRole<Guid>>(options =>
         {
             // Configure password, lockout, and user settings as needed

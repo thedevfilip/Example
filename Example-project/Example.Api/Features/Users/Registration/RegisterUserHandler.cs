@@ -5,7 +5,7 @@ namespace Example.Api.Features.Users.Registration;
 
 public sealed class RegisterUserHandler(UserManager<User> userManager)
 {
-    private readonly UserManager<User> _userManager = userManager;
+    private readonly UserManager<User> userManager = userManager;
 
     public async Task<RegisterUserResponse?> HandleAsync(RegisterUserRequest request)
     {
@@ -18,7 +18,7 @@ public sealed class RegisterUserHandler(UserManager<User> userManager)
         };
 
         // TODO: Print errors if creation fails
-        var result = await _userManager.CreateAsync(user, request.Password);
+        var result = await userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
             return null;
