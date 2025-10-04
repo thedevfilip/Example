@@ -1,0 +1,12 @@
+﻿<Project>
+	<PropertyGroup>
+		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+	</PropertyGroup>
+	<ItemGroup>
+		<PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.20" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.20" />
+		<PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.20" />
+		<PackageVersion Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.20" />
+		<PackageVersion Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.20" />
+	</ItemGroup>
+</Project>

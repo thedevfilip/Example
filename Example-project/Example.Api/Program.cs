@@ -5,19 +5,19 @@ using Example.Api.Features.Users.Registration;
 using Example.Infrastructure;
 using Example.Infrastructure.Seeders;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
-var services = builder.Services;
-var configuration = builder.Configuration;
+IServiceCollection services = builder.Services;
+IConfiguration configuration = builder.Configuration;
 
 services.AddInfrastructure(configuration);
 services.AddPresentation(configuration);
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
+using (IServiceScope scope = app.Services.CreateScope())
 {
-    var seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
+    DatabaseSeeder seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();
     await seeder.SeedAsync();
 }
 
@@ -29,4 +29,4 @@ app.MapRegisterUser();
 app.MapLoginUser();
 app.MapUserInfo();
 
-app.Run();
+await app.RunAsync();

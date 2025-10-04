@@ -8,10 +8,12 @@ public sealed class RoleSeeder(RoleManager<IdentityRole<Guid>> roleManager)
 
     public async Task SeedAsync()
     {
-        foreach (var role in Roles)
+        foreach (string role in Roles)
         {
             if (!await roleManager.RoleExistsAsync(role))
+            {
                 await roleManager.CreateAsync(new IdentityRole<Guid>(role));
+            }
         }
     }
 }

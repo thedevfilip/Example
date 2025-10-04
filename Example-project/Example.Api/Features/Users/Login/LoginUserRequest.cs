@@ -1,6 +1,6 @@
 namespace Example.Api.Features.Users.Login;
 
-public sealed record LoginUserRequest(
+internal sealed record LoginUserRequest(
     string Email,
     string Password
 );

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Example.Api.Features.Users.Registration;
 
-public sealed class RegisterUserHandler(UserManager<User> userManager)
+internal sealed class RegisterUserHandler(UserManager<User> userManager)
 {
     private readonly UserManager<User> userManager = userManager;
 
@@ -18,10 +18,12 @@ public sealed class RegisterUserHandler(UserManager<User> userManager)
         };
 
         // TODO: Print errors if creation fails
-        var result = await userManager.CreateAsync(user, request.Password);
+        IdentityResult result = await userManager.CreateAsync(user, request.Password);
 
         if (!result.Succeeded)
+        {
             return null;
+        }
 
         return new RegisterUserResponse(user.Id, user.Email!);
     }

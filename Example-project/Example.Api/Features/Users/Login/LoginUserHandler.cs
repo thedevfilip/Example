@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Example.Api.Features.Users.Login;
 
-public sealed class LoginUserHandler(
+internal sealed class LoginUserHandler(
     SignInManager<User> signInManager,
     UserManager<User> userManager,
     IOptionsMonitor<JwtOptions> configuration)
@@ -20,15 +20,19 @@ public sealed class LoginUserHandler(
 
     public async Task<LoginUserResponse?> HandleAsync(LoginUserRequest request)
     {
-        var user = await userManager.FindByEmailAsync(request.Email);
+        User? user = await userManager.FindByEmailAsync(request.Email);
         if (user is null)
+        {
             return null;
+        }
 
-        var result = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+        SignInResult result = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
         if (!result.Succeeded)
+        {
             return null;
+        }
 
-        var token = GenerateJwtToken(user);
+        string token = GenerateJwtToken(user);
         return new LoginUserResponse(user.Email!, token);
     }
 
@@ -37,12 +41,12 @@ public sealed class LoginUserHandler(
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        var claims = new[]
-        {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-            new Claim(ClaimTypes.Name, user.UserName!)
-        };
+        Claim[] claims =
+        [
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new(JwtRegisteredClaimNames.Email, user.Email!),
+            new(ClaimTypes.Name, user.UserName!)
+        ];
 
         var token = new JwtSecurityToken(
             issuer: jwtOptions.Issuer,

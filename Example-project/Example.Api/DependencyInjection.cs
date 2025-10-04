@@ -1,4 +1,5 @@
 using System.Text;
+using Example.Api.Features.Organizations.Registration;
 using Example.Api.Features.Users.Info;
 using Example.Api.Features.Users.Login;
 using Example.Api.Features.Users.Registration;
@@ -11,12 +12,12 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace Example.Api;
 
-public static class DependencyInjection
+internal static class DependencyInjection
 {
     public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<JwtOptions>(configuration.GetSection(Constants.Jwt));
-        
+
         services.AddIdentity<User, IdentityRole<Guid>>(options =>
         {
             // Configure password, lockout, and user settings as needed
@@ -36,7 +37,7 @@ public static class DependencyInjection
         })
             .AddJwtBearer(Constants.Bearer, options =>
             {
-                var jwtSettings = configuration.GetSection(Constants.Jwt);
+                IConfigurationSection jwtSettings = configuration.GetSection(Constants.Jwt);
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuer = true,
@@ -55,6 +56,7 @@ public static class DependencyInjection
         services.AddScoped<RegisterUserHandler>();
         services.AddScoped<LoginUserHandler>();
         services.AddScoped<UserInfoHandler>();
+        services.AddScoped<RegisterOrganizationHandler>();
 
         return services;
     }

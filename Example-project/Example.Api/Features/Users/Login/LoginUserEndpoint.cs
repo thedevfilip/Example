@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Example.Api.Features.Users.Login;
 
-public static class LoginUserEndpoint
+internal static class LoginUserEndpoint
 {
     public static IEndpointRouteBuilder MapLoginUser(this IEndpointRouteBuilder endpoints)
     {
@@ -10,8 +10,7 @@ public static class LoginUserEndpoint
             [FromServices] LoginUserHandler handler,
             [FromBody] LoginUserRequest request) =>
         {
-            var response = await handler.HandleAsync(request);
-            
+            LoginUserResponse? response = await handler.HandleAsync(request);
             return response is not null
                 ? Results.Ok(response)
                 : Results.BadRequest("Invalid credentials.");

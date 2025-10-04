@@ -4,7 +4,7 @@ using System.Security.Claims;
 
 namespace Example.Api.Features.Users.Info;
 
-public static class UserInfoEndpoint
+internal static class UserInfoEndpoint
 {
     public static IEndpointRouteBuilder MapUserInfo(this IEndpointRouteBuilder endpoints)
     {
@@ -12,8 +12,7 @@ public static class UserInfoEndpoint
             ClaimsPrincipal user,
             [FromServices] UserInfoHandler handler) =>
         {
-            var result = await handler.HandleAsync(user);
-            
+            UserInfoResponse? result = await handler.HandleAsync(user);
             return Results.Ok(result);
         });
 
