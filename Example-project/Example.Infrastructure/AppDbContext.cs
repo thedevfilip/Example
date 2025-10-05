@@ -13,7 +13,4 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbCo
         builder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
         base.OnModelCreating(builder);
     }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
-        base.OnConfiguring(optionsBuilder);
 }

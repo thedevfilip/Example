@@ -10,8 +10,8 @@ WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 IServiceCollection services = builder.Services;
 IConfiguration configuration = builder.Configuration;
 
-services.AddInfrastructure(configuration);
 services.AddPresentation(configuration);
+services.AddInfrastructure(configuration);
 
 WebApplication app = builder.Build();
 
