@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -8,7 +7,7 @@ internal static class UserInfoEndpoint
 {
     public static IEndpointRouteBuilder MapUserInfo(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapGet("/api/users/info", [Authorize] async (
+        endpoints.MapGet("/api/users/info", async (
             ClaimsPrincipal user,
             [FromServices] UserInfoHandler handler) =>
         {

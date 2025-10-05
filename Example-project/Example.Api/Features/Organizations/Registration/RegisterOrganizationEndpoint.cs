@@ -7,7 +7,7 @@ internal static class CreateOrganizationEndpoint
 {
     public static IEndpointRouteBuilder MapCreateOrganization(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/api/organizations", [Authorize] async (
+        endpoints.MapPost("/api/organizations", [AllowAnonymous] async (
             [FromServices] RegisterOrganizationHandler handler,
             [FromBody] RegisterOrganizationRequest request) =>
         {

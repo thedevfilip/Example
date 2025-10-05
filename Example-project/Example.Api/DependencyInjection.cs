@@ -7,6 +7,7 @@ using Example.Api.Options;
 using Example.Domain.Entities;
 using Example.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 
@@ -51,7 +52,10 @@ internal static class DependencyInjection
                 };
             });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+            options.FallbackPolicy = new AuthorizationPolicyBuilder()
+            .RequireAuthenticatedUser()
+            .Build());
 
         services.AddScoped<RegisterUserHandler>();
         services.AddScoped<LoginUserHandler>();
