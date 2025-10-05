@@ -9,6 +9,9 @@ WebApplicationBuilder? builder = WebApplication.CreateBuilder(args);
 
 IServiceCollection services = builder.Services;
 IConfiguration configuration = builder.Configuration;
+ConfigureWebHostBuilder webHost = builder.WebHost;
+
+webHost.ConfigureKestrel(options => options.AddServerHeader = false);
 
 services.AddPresentation(configuration);
 services.AddInfrastructure(configuration);
