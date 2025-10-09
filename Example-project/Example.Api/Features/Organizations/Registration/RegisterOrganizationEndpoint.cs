@@ -12,6 +12,7 @@ internal static class CreateOrganizationEndpoint
             [FromBody] RegisterOrganizationRequest request) =>
         {
             RegisterOrganizationResponse response = await handler.HandleAsync(request);
+
             return Results.Ok(response);
         });
 

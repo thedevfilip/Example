@@ -12,6 +12,7 @@ internal static class RegisterUserEndpoint
             [FromBody] RegisterUserRequest request) =>
         {
             RegisterUserResponse? response = await handler.HandleAsync(request);
+
             return response is not null
                 ? Results.Ok(response)
                 : Results.BadRequest("User registration failed.");

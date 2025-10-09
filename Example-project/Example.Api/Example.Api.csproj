@@ -1,5 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
+  <PropertyGroup>
+    <UserSecretsId>4226896c-cfd6-43ba-ae7e-5e6683bc7eb5</UserSecretsId>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Example.Infrastructure\Example.Infrastructure.csproj" />
     <ProjectReference Include="..\Example.Domain\Example.Domain.csproj" />

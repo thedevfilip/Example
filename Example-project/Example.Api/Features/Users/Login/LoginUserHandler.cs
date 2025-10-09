@@ -1,7 +1,6 @@
 using Example.Api.Options;
 using Example.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -12,11 +11,11 @@ namespace Example.Api.Features.Users.Login;
 internal sealed class LoginUserHandler(
     SignInManager<User> signInManager,
     UserManager<User> userManager,
-    IOptionsMonitor<JwtOptions> configuration)
+    JwtOptions options)
 {
     private readonly SignInManager<User> signInManager = signInManager;
     private readonly UserManager<User> userManager = userManager;
-    private readonly JwtOptions jwtOptions = configuration.CurrentValue;
+    private readonly JwtOptions options = options;
 
     public async Task<LoginUserResponse?> HandleAsync(LoginUserRequest request)
     {
@@ -32,27 +31,30 @@ internal sealed class LoginUserHandler(
             return null;
         }
 
-        string token = GenerateJwtToken(user);
+        string token = await GenerateJwtToken(user);
         return new LoginUserResponse(user.Email!, token);
     }
 
-    private string GenerateJwtToken(User user)
+    private async Task<string> GenerateJwtToken(User user)
     {
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Key));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Key));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        IList<string> roles = await userManager.GetRolesAsync(user);
 
         Claim[] claims =
         [
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email!),
-            new(ClaimTypes.Name, user.UserName!)
+            new(ClaimTypes.Name, user.UserName!),
+            ..roles.Select(role => new Claim(ClaimTypes.Role, role))
         ];
 
         var token = new JwtSecurityToken(
-            issuer: jwtOptions.Issuer,
-            audience: jwtOptions.Audience,
+            issuer: options.Issuer,
+            audience: options.Audience,
             claims: claims,
-            expires: DateTime.UtcNow.AddHours(1),
+            expires: DateTime.UtcNow.AddMinutes(options.ExpirationInMinutes),
             signingCredentials: credentials);
 
         return new JwtSecurityTokenHandler().WriteToken(token);
