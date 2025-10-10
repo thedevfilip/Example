@@ -1,6 +1,7 @@
 using Example.Api;
 using Example.Api.Features.Users.Info;
 using Example.Api.Features.Users.Login;
+using Example.Api.Features.Users.RefreshTokenLogin;
 using Example.Api.Features.Users.Registration;
 using Example.Infrastructure;
 using Example.Infrastructure.Seeders;
@@ -30,6 +31,7 @@ app.UseAuthorization();
 
 app.MapRegisterUser();
 app.MapLoginUser();
+app.MapRefreshToken();
 app.MapUserInfo();
 
 await app.RunAsync();

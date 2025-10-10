@@ -2,9 +2,10 @@ using System.Text;
 using Example.Api.Features.Organizations.Registration;
 using Example.Api.Features.Users.Info;
 using Example.Api.Features.Users.Login;
+using Example.Api.Features.Users.RefreshTokenLogin;
 using Example.Api.Features.Users.Registration;
-using Example.Api.Options;
 using Example.Domain.Entities;
+using Example.Domain.Options;
 using Example.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -58,10 +59,12 @@ internal static class DependencyInjection
 
         services.AddScoped<RegisterUserHandler>();
         services.AddScoped<LoginUserHandler>();
+        services.AddScoped<RefreshTokenHandler>();
         services.AddScoped<UserInfoHandler>();
         services.AddScoped<RegisterOrganizationHandler>();
 
         services.AddSingleton(p => p.GetRequiredService<IOptions<JwtOptions>>().Value);
+        services.AddSingleton<TokenProvider>();
 
         return services;
     }
