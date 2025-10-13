@@ -1,4 +1,5 @@
 using System.Text;
+using System.Threading.RateLimiting;
 using Example.Api.Features.Organizations.Registration;
 using Example.Api.Features.Users.Info;
 using Example.Api.Features.Users.Login;
@@ -34,7 +35,6 @@ internal static class DependencyInjection
         .AddEntityFrameworkStores<AppDbContext>()
         .AddDefaultTokenProviders();
 
-        // TODO: Add support for refresh tokens
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -56,6 +56,28 @@ internal static class DependencyInjection
             options.FallbackPolicy = new AuthorizationPolicyBuilder()
             .RequireAuthenticatedUser()
             .Build());
+
+        services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+            options.AddPolicy("login-refresh", httpContext => RateLimitPartition.GetFixedWindowLimiter(
+                partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
+                factory: _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 5,
+                    Window = TimeSpan.FromMinutes(1)
+                }));
+
+            options.AddPolicy("register", httpContext => RateLimitPartition.GetFixedWindowLimiter(
+                partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
+                factory: _ => new FixedWindowRateLimiterOptions
+                {
+                    PermitLimit = 3,
+                    Window = TimeSpan.FromHours(1)
+                }));
+        });
+
 
         services.AddScoped<RegisterUserHandler>();
         services.AddScoped<LoginUserHandler>();

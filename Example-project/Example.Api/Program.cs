@@ -26,6 +26,9 @@ using (IServiceScope scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRateLimiter();
+
 app.UseAuthentication();
 app.UseAuthorization();
 

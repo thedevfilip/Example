@@ -16,7 +16,7 @@ internal static class RegisterUserEndpoint
             return response is not null
                 ? Results.Ok(response)
                 : Results.BadRequest("User registration failed.");
-        });
+        }).RequireRateLimiting("register");
 
         return endpoints;
     }

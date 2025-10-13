@@ -16,7 +16,7 @@ internal static class LoginUserEndpoint
             return response is not null
                 ? Results.Ok(response)
                 : Results.BadRequest("Invalid credentials.");
-        });
+        }).RequireRateLimiting("login-refresh");
 
         return endpoints;
     }

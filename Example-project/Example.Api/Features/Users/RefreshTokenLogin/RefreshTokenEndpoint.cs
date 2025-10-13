@@ -16,7 +16,7 @@ internal static class RefreshTokenEndpoint
             return response is not null
                 ? Results.Ok(response)
                 : Results.BadRequest("Invalid token.");
-        });
+        }).RequireRateLimiting("login-refresh");
 
         return endpoints;
     }
