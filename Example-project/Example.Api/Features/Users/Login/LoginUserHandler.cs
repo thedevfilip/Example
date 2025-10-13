@@ -1,4 +1,5 @@
 using Example.Domain.Entities;
+using Example.Domain.Interfaces;
 using Example.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 
@@ -8,7 +9,9 @@ internal sealed class LoginUserHandler(
     SignInManager<User> signInManager,
     UserManager<User> userManager,
     TokenProvider tokenProvider,
-    AppDbContext context)
+    AppDbContext context,
+    IClientInfoProvider clientInfoProvider,
+    IHttpContextAccessor httpContextAccessor)
 {
     private readonly SignInManager<User> signInManager = signInManager;
     private readonly UserManager<User> userManager = userManager;
@@ -16,6 +19,7 @@ internal sealed class LoginUserHandler(
     public async Task<LoginUserResponse?> HandleAsync(LoginUserRequest request)
     {
         User? user = await userManager.FindByEmailAsync(request.Email);
+
         if (user is null)
         {
             return null;
@@ -32,10 +36,15 @@ internal sealed class LoginUserHandler(
 
         string token = tokenProvider.Create(user, roles);
 
-        var refreshToken = RefreshToken.Create(TokenProvider.CreateRefreshToken(), user);
+        HttpContext httpContext = httpContextAccessor.HttpContext!;
 
-        await context.Set<RefreshToken>()
-            .AddAsync(refreshToken);
+        var refreshToken = RefreshToken.Create(
+            TokenProvider.CreateRefreshToken(),
+            user,
+            clientInfoProvider.GetClientIpAddress(httpContext),
+            clientInfoProvider.GetUserAgent(httpContext));
+
+        await context.AddAsync(refreshToken);
 
         await context.SaveChangesAsync();
 

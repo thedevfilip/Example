@@ -63,6 +63,8 @@ internal static class DependencyInjection
         services.AddScoped<UserInfoHandler>();
         services.AddScoped<RegisterOrganizationHandler>();
 
+        services.AddHttpContextAccessor();
+
         services.AddSingleton(p => p.GetRequiredService<IOptions<JwtOptions>>().Value);
         services.AddSingleton<TokenProvider>();
 

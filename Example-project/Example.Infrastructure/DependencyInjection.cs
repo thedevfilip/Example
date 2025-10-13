@@ -1,7 +1,9 @@
-using Microsoft.Extensions.DependencyInjection;
+using Example.Domain.Interfaces;
+using Example.Infrastructure.Seeders;
+using Example.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Example.Infrastructure.Seeders;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Example.Infrastructure;
 
@@ -15,6 +17,7 @@ public static class DependencyInjection
 
         services.AddScoped<RoleSeeder>();
         services.AddScoped<DatabaseSeeder>();
+        services.AddScoped<IClientInfoProvider, ClientInfoProvider>();
 
         return services;
     }

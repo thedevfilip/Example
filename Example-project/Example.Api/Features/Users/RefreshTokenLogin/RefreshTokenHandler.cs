@@ -1,4 +1,5 @@
 ﻿using Example.Domain.Entities;
+using Example.Domain.Interfaces;
 using Example.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -7,29 +8,44 @@ namespace Example.Api.Features.Users.RefreshTokenLogin;
 
 internal sealed class RefreshTokenHandler(
     UserManager<User> userManager,
+    TokenProvider tokenProvider,
     AppDbContext context,
-    TokenProvider tokenProvider)
+    IClientInfoProvider clientInfoProvider,
+    IHttpContextAccessor httpContextAccessor)
 {
     internal async Task<RefreshTokenResponse?> HandleAsync(RefreshTokenRequest request)
     {
-        RefreshToken? refreshToken = await context.Set<RefreshToken>()
+        RefreshToken? oldRefreshToken = await context.Set<RefreshToken>()
             .Include(p => p.User)
             .FirstOrDefaultAsync(p => p.Token == request.RefreshToken);
 
-        if (refreshToken is null || refreshToken.Expired)
+        if (oldRefreshToken is null || !oldRefreshToken.IsActive)
         {
             // TODO: Respond with valid error code and message
             return null;
         }
 
-        IEnumerable<string> roles = await userManager.GetRolesAsync(refreshToken.User);
+        HttpContext? httpContext = httpContextAccessor.HttpContext!;
 
-        string accessToken = tokenProvider.Create(refreshToken.User, roles);
+        string? clientIp = clientInfoProvider.GetClientIpAddress(httpContext);
+        string? userAgent = clientInfoProvider.GetUserAgent(httpContext);
 
-        refreshToken.UpdateToken(TokenProvider.CreateRefreshToken());
+        if (!oldRefreshToken.IsValidForClient(clientIp, userAgent))
+        {
+            oldRefreshToken.Revoke();
+            await context.SaveChangesAsync();
+            return null;
+        }
 
+        var newRefreshToken = RefreshToken.Create(TokenProvider.CreateRefreshToken(), oldRefreshToken.User!, clientIp, userAgent);
+
+        await context.AddAsync(newRefreshToken);
+        oldRefreshToken.Revoke();
         await context.SaveChangesAsync();
 
-        return new RefreshTokenResponse(accessToken, refreshToken.Token);
+        IEnumerable<string> roles = await userManager.GetRolesAsync(oldRefreshToken.User!);
+        string accessToken = tokenProvider.Create(oldRefreshToken.User!, roles);
+
+        return new RefreshTokenResponse(accessToken, newRefreshToken.Token);
     }
 }
