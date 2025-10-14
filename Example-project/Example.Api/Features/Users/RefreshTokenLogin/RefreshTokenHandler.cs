@@ -19,9 +19,28 @@ internal sealed class RefreshTokenHandler(
             .Include(p => p.User)
             .FirstOrDefaultAsync(p => p.Token == request.RefreshToken);
 
-        if (oldRefreshToken is null || !oldRefreshToken.IsActive)
+        if (oldRefreshToken is null)
         {
-            // TODO: Respond with valid error code and message
+            return null;
+        }
+
+        if (oldRefreshToken.IsRevoked)
+        {
+            IEnumerable<RefreshToken> tokenFamily = await context.Set<RefreshToken>()
+                .Where(p => p.UserId == oldRefreshToken.UserId)
+                .ToListAsync();
+
+            foreach (RefreshToken token in tokenFamily)
+            {
+                token.Revoke();
+            }
+
+            await context.SaveChangesAsync();
+            return null;
+        }
+
+        if (oldRefreshToken.Expired)
+        {
             return null;
         }
 
@@ -37,15 +56,22 @@ internal sealed class RefreshTokenHandler(
             return null;
         }
 
-        var newRefreshToken = RefreshToken.Create(TokenProvider.CreateRefreshToken(), oldRefreshToken.User!, clientIp, userAgent);
+        try
+        {
+            var newRefreshToken = RefreshToken.Create(TokenProvider.CreateRefreshToken(), oldRefreshToken.User!, clientIp, userAgent);
 
-        await context.AddAsync(newRefreshToken);
-        oldRefreshToken.Revoke();
-        await context.SaveChangesAsync();
+            await context.AddAsync(newRefreshToken);
+            oldRefreshToken.Revoke();
+            await context.SaveChangesAsync();
 
-        IEnumerable<string> roles = await userManager.GetRolesAsync(oldRefreshToken.User!);
-        string accessToken = tokenProvider.Create(oldRefreshToken.User!, roles);
+            IEnumerable<string> roles = await userManager.GetRolesAsync(oldRefreshToken.User!);
+            string accessToken = tokenProvider.Create(oldRefreshToken.User!, roles);
 
-        return new RefreshTokenResponse(accessToken, newRefreshToken.Token);
+            return new RefreshTokenResponse(accessToken, newRefreshToken.Token);
+        }
+        catch (Exception)
+        {
+            return null;
+        }
     }
 }

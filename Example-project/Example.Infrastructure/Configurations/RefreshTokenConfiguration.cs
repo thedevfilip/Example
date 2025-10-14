@@ -28,6 +28,9 @@ internal sealed class RefreshTokenConfiguration : IEntityTypeConfiguration<Refre
         builder.Property(p => p.IsRevoked)
             .HasDefaultValue(false);
 
+        builder.Property(p => p.ConcurrencyStamp)
+            .IsRowVersion();
+
         builder.HasIndex(p => p.Token)
             .IsUnique();
 

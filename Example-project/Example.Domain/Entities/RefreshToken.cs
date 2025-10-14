@@ -10,6 +10,7 @@ public sealed class RefreshToken
     public string UserAgent { get; init; } = default!;
     public DateTime CreatedAt { get; init; }
     public bool IsRevoked { get; private set; }
+    public byte[] ConcurrencyStamp { get; private set; } = default!;
 
     public User User { get; set; } = default!;
 
@@ -28,10 +29,23 @@ public sealed class RefreshToken
     public bool Expired => DateTime.UtcNow >= ExpiresAt;
     public bool IsActive => !Expired && !IsRevoked;
 
-    public void Revoke() => IsRevoked = true;
+    public void Revoke()
+    {
+        if (IsRevoked)
+        {
+            return;
+        }
+
+        IsRevoked = true;
+    }
 
     public bool IsValidForClient(string clientIp, string clientUserAgent)
     {
+        if (IsRevoked)
+        {
+            return false;
+        }
+
         bool ipMatches = string.Equals(IpAddress, clientIp, StringComparison.OrdinalIgnoreCase);
         bool userAgentMatches = string.Equals(UserAgent, clientUserAgent, StringComparison.OrdinalIgnoreCase);
 
