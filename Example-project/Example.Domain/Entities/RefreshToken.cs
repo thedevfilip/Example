@@ -28,12 +28,6 @@ public sealed class RefreshToken
     public bool Expired => DateTime.UtcNow >= ExpiresAt;
     public bool IsActive => !Expired && !IsRevoked;
 
-    public void UpdateToken(string value)
-    {
-        Token = value;
-        ExpiresAt = DateTime.UtcNow.AddDays(7);
-    }
-
     public void Revoke() => IsRevoked = true;
 
     public bool IsValidForClient(string clientIp, string clientUserAgent)

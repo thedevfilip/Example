@@ -296,6 +296,9 @@ dotnet_diagnostic.S1135.severity = none
 
 dotnet_diagnostic.ASP0025.severity = none
 
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity = none
+
 [*.{cs,vb}]
 dotnet_style_coalesce_expression = true:error
 dotnet_style_null_propagation = true:error
