@@ -19,6 +19,11 @@ services.AddInfrastructure(configuration);
 
 WebApplication app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    app.ApplyMigrations();
+}
+
 using (IServiceScope scope = app.Services.CreateScope())
 {
     DatabaseSeeder seeder = scope.ServiceProvider.GetRequiredService<DatabaseSeeder>();

@@ -57,3 +57,6 @@ nunit-*.xml
 
 # Migrations
 Example-Project/Example.Migrations/
+
+# Docker
+Example-Project/.env
