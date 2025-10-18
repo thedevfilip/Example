@@ -43,3 +43,5 @@ app.MapRefreshToken();
 app.MapUserInfo();
 
 await app.RunAsync();
+
+public partial class Program { }

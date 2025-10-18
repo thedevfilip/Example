@@ -294,10 +294,16 @@ dotnet_diagnostic.CS1591.severity = none
 # S1135: Track uses of "TODO" tags
 dotnet_diagnostic.S1135.severity = none
 
+# S1118: Utility classes should not have public constructor
+dotnet_diagnostic.S1118.severity = none
+
 dotnet_diagnostic.ASP0025.severity = none
 
 # CA1707: Identifiers should not contain underscores
 dotnet_diagnostic.CA1707.severity = none
+
+# CA1515: Consider making public types internal
+dotnet_diagnostic.CA1515.severity = none
 
 [*.{cs,vb}]
 dotnet_style_coalesce_expression = true:error

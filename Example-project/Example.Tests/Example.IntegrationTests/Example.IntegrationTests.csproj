@@ -5,12 +5,14 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" />
     <PackageReference Include="Testcontainers" />
+    <PackageReference Include="Testcontainers.MsSql" />
     <PackageReference Include="xunit" />
     <PackageReference Include="xunit.runner.visualstudio" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Example.Api\Example.Api.csproj" />
+    <ProjectReference Include="..\..\Example.Infrastructure\Example.Infrastructure.csproj" />
   </ItemGroup>
 
   <ItemGroup>
