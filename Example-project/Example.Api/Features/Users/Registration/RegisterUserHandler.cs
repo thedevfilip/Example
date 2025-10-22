@@ -9,13 +9,7 @@ internal sealed class RegisterUserHandler(UserManager<User> userManager)
 
     public async Task<RegisterUserResponse?> HandleAsync(RegisterUserRequest request)
     {
-        var user = new User
-        {
-            UserName = request.Email,
-            Email = request.Email,
-            FirstName = request.FirstName,
-            LastName = request.LastName
-        };
+        var user = User.Create(request.Email, request.FirstName, request.LastName);
 
         // TODO: Print errors if creation fails
         IdentityResult result = await userManager.CreateAsync(user, request.Password);

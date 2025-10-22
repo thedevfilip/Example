@@ -33,6 +33,7 @@ public class RegisterTests(IntegrationTestWebAppFactory factory) : BaseIntegrati
         User? created = await ExecuteScopedAsync(async sp =>
         {
             AppDbContext db = sp.GetRequiredService<AppDbContext>();
+
             return await db.Users.AsNoTracking().SingleOrDefaultAsync(u => u.Email == request.Email);
         });
 
@@ -48,8 +49,11 @@ public class RegisterTests(IntegrationTestWebAppFactory factory) : BaseIntegrati
         await ExecuteScopedAsync(async sp =>
         {
             UserManager<User> userManager = sp.GetRequiredService<UserManager<User>>();
-            var user = new User { UserName = email, Email = email, FirstName = "test", LastName = "test" };
+
+            var user = User.Create(email, "test", "test");
+
             IdentityResult result = await userManager.CreateAsync(user, "A@ssssss1!");
+
             result.Succeeded.Should().BeTrue("Seeding user should succeed");
         });
 
@@ -60,6 +64,7 @@ public class RegisterTests(IntegrationTestWebAppFactory factory) : BaseIntegrati
             LastName: "test");
 
         HttpResponseMessage response = await Client.PostAsJsonAsync("/api/users/register", duplicate);
+
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
@@ -73,6 +78,7 @@ public class RegisterTests(IntegrationTestWebAppFactory factory) : BaseIntegrati
             LastName: "test");
 
         HttpResponseMessage response = await Client.PostAsJsonAsync("/api/users/register", request);
+
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 }

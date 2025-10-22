@@ -1,13 +1,12 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Example.Api.Features.Organizations.Registration;
 
 internal static class CreateOrganizationEndpoint
 {
-    public static IEndpointRouteBuilder MapCreateOrganization(this IEndpointRouteBuilder endpoints)
+    public static IEndpointRouteBuilder MapRegisterOrganization(this IEndpointRouteBuilder endpoints)
     {
-        endpoints.MapPost("/api/organizations", [AllowAnonymous] async (
+        endpoints.MapPost("/api/organization", async (
             [FromServices] RegisterOrganizationHandler handler,
             [FromBody] RegisterOrganizationRequest request) =>
         {

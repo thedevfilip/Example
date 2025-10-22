@@ -1,4 +1,5 @@
 using Example.Api;
+using Example.Api.Features.Organizations.Registration;
 using Example.Api.Features.Users.Info;
 using Example.Api.Features.Users.Login;
 using Example.Api.Features.Users.RefreshTokenLogin;
@@ -41,6 +42,7 @@ app.MapRegisterUser();
 app.MapLoginUser();
 app.MapRefreshToken();
 app.MapUserInfo();
+app.MapRegisterOrganization();
 
 await app.RunAsync();
 
