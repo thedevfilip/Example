@@ -13,26 +13,26 @@ internal sealed class LoginUserHandler(
     IClientInfoProvider clientInfoProvider,
     IHttpContextAccessor httpContextAccessor)
 {
-    private readonly SignInManager<User> signInManager = signInManager;
-    private readonly UserManager<User> userManager = userManager;
+    private readonly SignInManager<User> _signInManager = signInManager;
+    private readonly UserManager<User> _userManager = userManager;
 
     public async Task<LoginUserResponse?> HandleAsync(LoginUserRequest request)
     {
-        User? user = await userManager.FindByEmailAsync(request.Email);
+        User? user = await _userManager.FindByEmailAsync(request.Email);
 
         if (user is null)
         {
             return null;
         }
 
-        SignInResult result = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+        SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
         if (!result.Succeeded)
         {
             return null;
         }
 
-        IEnumerable<string> roles = await userManager.GetRolesAsync(user);
+        IEnumerable<string> roles = await _userManager.GetRolesAsync(user);
 
         string token = tokenProvider.Create(user, roles);
 

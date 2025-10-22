@@ -10,7 +10,7 @@ namespace Example.IntegrationTests;
 
 public sealed class IntegrationTestWebAppFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private readonly MsSqlContainer sqlContainer = new MsSqlBuilder().Build();
+    private readonly MsSqlContainer _sqlContainer = new MsSqlBuilder().Build();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder) =>
         builder
@@ -24,15 +24,15 @@ public sealed class IntegrationTestWebAppFactory : WebApplicationFactory<Program
                 services.Remove(descriptor);
             }
 
-            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(sqlContainer.GetConnectionString()));
+            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(_sqlContainer.GetConnectionString()));
         });
 
     public async Task InitializeAsync()
     {
-        await sqlContainer.StartAsync();
+        await _sqlContainer.StartAsync();
 
         DbContextOptions<AppDbContext> options = new DbContextOptionsBuilder<AppDbContext>()
-            .UseSqlServer(sqlContainer.GetConnectionString(),
+            .UseSqlServer(_sqlContainer.GetConnectionString(),
                 builder => builder.MigrationsAssembly("Example.Migrations"))
             .Options;
 
@@ -40,5 +40,5 @@ public sealed class IntegrationTestWebAppFactory : WebApplicationFactory<Program
         await dbContext.Database.MigrateAsync();
     }
 
-    public new async Task DisposeAsync() => await sqlContainer.DisposeAsync();
+    public new async Task DisposeAsync() => await _sqlContainer.DisposeAsync();
 }

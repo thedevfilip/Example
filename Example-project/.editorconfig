@@ -172,6 +172,10 @@ dotnet_naming_rule.non_field_members_should_be_pascal_case.severity = suggestion
 dotnet_naming_rule.non_field_members_should_be_pascal_case.symbols = non_field_members
 dotnet_naming_rule.non_field_members_should_be_pascal_case.style = pascal_case
 
+dotnet_naming_rule.private_readonly_fields_should_have_underscore.severity = error
+dotnet_naming_rule.private_readonly_fields_should_have_underscore.symbols = private_readonly_fields
+dotnet_naming_rule.private_readonly_fields_should_have_underscore.style = underscore_camel_case
+
 # Symbol specifications
 
 dotnet_naming_symbols.interface.applicable_kinds = interface
@@ -186,6 +190,10 @@ dotnet_naming_symbols.non_field_members.applicable_kinds = property, event, meth
 dotnet_naming_symbols.non_field_members.applicable_accessibilities = public, internal, private, protected, protected_internal, private_protected
 dotnet_naming_symbols.non_field_members.required_modifiers = 
 
+dotnet_naming_symbols.private_readonly_fields.applicable_kinds = field
+dotnet_naming_symbols.private_readonly_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_readonly_fields.required_modifiers = readonly
+
 # Naming styles
 
 dotnet_naming_style.pascal_case.required_prefix = 
@@ -197,6 +205,11 @@ dotnet_naming_style.begins_with_i.required_prefix = I
 dotnet_naming_style.begins_with_i.required_suffix = 
 dotnet_naming_style.begins_with_i.word_separator = 
 dotnet_naming_style.begins_with_i.capitalization = pascal_case
+
+dotnet_naming_style.underscore_camel_case.required_prefix = _
+dotnet_naming_style.underscore_camel_case.required_suffix = 
+dotnet_naming_style.underscore_camel_case.word_separator = 
+dotnet_naming_style.underscore_camel_case.capitalization = camel_case
 
 # StyleCop.Analyzers
 
@@ -324,3 +337,10 @@ tab_width = 4
 indent_size = 4
 end_of_line = crlf
 dotnet_style_prefer_simplified_interpolation = true:suggestion
+
+# Disable style rules for auto-generated migration files
+[**/Migrations/**/*.cs]
+generated_code = true
+# Disable all style rules for migrations
+dotnet_analyzer_diagnostic.category-style.severity = none
+dotnet_analyzer_diagnostic.category-codequality.severity = none
