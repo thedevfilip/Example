@@ -1,3 +1,4 @@
+using Example.Domain.Primitives;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,11 +12,10 @@ internal static class RegisterUserEndpoint
             [FromServices] RegisterUserHandler handler,
             [FromBody] RegisterUserRequest request) =>
         {
-            RegisterUserResponse? response = await handler.HandleAsync(request);
+            Result<RegisterUserResponse> result = await handler.HandleAsync(request);
 
-            return response is not null
-                ? Results.Ok(response)
-                : Results.BadRequest("User registration failed.");
+            return result.Match(Results.Ok, error => Results.BadRequest(error.Desription));
+
         }).RequireRateLimiting("register");
 
         return endpoints;
