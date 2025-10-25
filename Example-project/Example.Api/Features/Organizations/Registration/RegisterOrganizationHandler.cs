@@ -15,9 +15,7 @@ internal sealed class RegisterOrganizationHandler(
     {
         var userId = Guid.Parse(httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        // TODO: Implement result pattern for error handling
-        IdentityRole<Guid> ownerRole = await roleManager.Roles.SingleOrDefaultAsync(r => r.Name == "Owner") ??
-                                         throw new InvalidOperationException("Owner role not found.");
+        IdentityRole<Guid> ownerRole = await roleManager.Roles.SingleAsync(r => r.Name == "Owner");
 
         var organization = Organization.Create(request.Name);
 

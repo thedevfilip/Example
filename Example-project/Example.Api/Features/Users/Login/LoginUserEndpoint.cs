@@ -1,3 +1,4 @@
+using Example.Domain.Primitives;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,11 +12,9 @@ internal static class LoginUserEndpoint
             [FromServices] LoginUserHandler handler,
             [FromBody] LoginUserRequest request) =>
         {
-            LoginUserResponse? response = await handler.HandleAsync(request);
+            Result<LoginUserResponse> result = await handler.HandleAsync(request);
 
-            return response is not null
-                ? Results.Ok(response)
-                : Results.BadRequest("Invalid credentials.");
+            return result.Match(Results.Ok, error => Results.BadRequest(error.Desription));
         }).RequireRateLimiting("login-refresh");
 
         return endpoints;

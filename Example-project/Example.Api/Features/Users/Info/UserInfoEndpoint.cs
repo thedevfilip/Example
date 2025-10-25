@@ -1,3 +1,4 @@
+using Example.Domain.Primitives;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -11,8 +12,8 @@ internal static class UserInfoEndpoint
             ClaimsPrincipal user,
             [FromServices] UserInfoHandler handler) =>
         {
-            UserInfoResponse? result = await handler.HandleAsync(user);
-            return Results.Ok(result);
+            Result<UserInfoResponse> result = await handler.HandleAsync(user);
+            return result.Match(Results.Ok, error => Results.BadRequest(error.Desription));
         });
 
         return endpoints;

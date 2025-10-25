@@ -1,5 +1,6 @@
 ﻿using Example.Domain.Entities;
 using Example.Domain.Interfaces;
+using Example.Domain.Primitives;
 using Example.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ internal sealed class RefreshTokenHandler(
     IClientInfoProvider clientInfoProvider,
     IHttpContextAccessor httpContextAccessor)
 {
-    internal async Task<RefreshTokenResponse?> HandleAsync(RefreshTokenRequest request)
+    internal async Task<Result<RefreshTokenResponse>> HandleAsync(RefreshTokenRequest request)
     {
         RefreshToken? oldRefreshToken = await context.Set<RefreshToken>()
             .Include(p => p.User)
@@ -21,7 +22,7 @@ internal sealed class RefreshTokenHandler(
 
         if (oldRefreshToken is null)
         {
-            return null;
+            return RefreshTokenErrors.InvalidRefreshToken;
         }
 
         if (oldRefreshToken.IsRevoked)
@@ -36,12 +37,12 @@ internal sealed class RefreshTokenHandler(
             }
 
             await context.SaveChangesAsync();
-            return null;
+            return RefreshTokenErrors.InvalidRefreshToken;
         }
 
         if (oldRefreshToken.Expired)
         {
-            return null;
+            return RefreshTokenErrors.RefreshTokenExpired;
         }
 
         HttpContext? httpContext = httpContextAccessor.HttpContext!;
@@ -52,8 +53,10 @@ internal sealed class RefreshTokenHandler(
         if (!oldRefreshToken.IsValidForClient(clientIp, userAgent))
         {
             oldRefreshToken.Revoke();
+
             await context.SaveChangesAsync();
-            return null;
+
+            return RefreshTokenErrors.InvalidRefreshToken;
         }
 
         try
@@ -61,17 +64,20 @@ internal sealed class RefreshTokenHandler(
             var newRefreshToken = RefreshToken.Create(TokenProvider.CreateRefreshToken(), oldRefreshToken.User!, clientIp, userAgent);
 
             await context.AddAsync(newRefreshToken);
+
             oldRefreshToken.Revoke();
+
             await context.SaveChangesAsync();
 
             IEnumerable<string> roles = await userManager.GetRolesAsync(oldRefreshToken.User!);
+
             string accessToken = tokenProvider.Create(oldRefreshToken.User!, roles);
 
             return new RefreshTokenResponse(accessToken, newRefreshToken.Token);
         }
         catch (Exception)
         {
-            return null;
+            return CommonErrors.InternalServerError;
         }
     }
 }

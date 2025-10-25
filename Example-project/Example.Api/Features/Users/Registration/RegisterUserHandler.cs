@@ -14,7 +14,7 @@ internal sealed class RegisterUserHandler(UserManager<User> userManager)
 
         if (existingUser is not null)
         {
-            return RegistrationErrors.EmailTaken;
+            return RegisterUserErrors.EmailTaken;
         }
 
         var user = User.Create(request.Email, request.FirstName, request.LastName);
@@ -25,7 +25,7 @@ internal sealed class RegisterUserHandler(UserManager<User> userManager)
         if (!result.Succeeded)
         {
             // TODO: Log actual error
-            return RegistrationErrors.InternalServerError;
+            return CommonErrors.InternalServerError;
         }
 
         return new RegisterUserResponse(user.Id, user.Email!);

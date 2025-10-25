@@ -1,5 +1,6 @@
 using Example.Domain.Entities;
 using Example.Domain.Interfaces;
+using Example.Domain.Primitives;
 using Example.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 
@@ -16,20 +17,20 @@ internal sealed class LoginUserHandler(
     private readonly SignInManager<User> _signInManager = signInManager;
     private readonly UserManager<User> _userManager = userManager;
 
-    public async Task<LoginUserResponse?> HandleAsync(LoginUserRequest request)
+    public async Task<Result<LoginUserResponse>> HandleAsync(LoginUserRequest request)
     {
         User? user = await _userManager.FindByEmailAsync(request.Email);
 
         if (user is null)
         {
-            return null;
+            return LoginUserErrors.InvalidCredentials;
         }
 
         SignInResult result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
 
         if (!result.Succeeded)
         {
-            return null;
+            return LoginUserErrors.InvalidCredentials;
         }
 
         IEnumerable<string> roles = await _userManager.GetRolesAsync(user);

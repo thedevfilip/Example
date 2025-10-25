@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Example.Domain.Primitives;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Example.Api.Features.Users.RefreshTokenLogin;
@@ -11,11 +12,9 @@ internal static class RefreshTokenEndpoint
             [FromServices] RefreshTokenHandler handler,
             [FromBody] RefreshTokenRequest request) =>
         {
-            RefreshTokenResponse? response = await handler.HandleAsync(request);
+            Result<RefreshTokenResponse> result = await handler.HandleAsync(request);
 
-            return response is not null
-                ? Results.Ok(response)
-                : Results.BadRequest("Invalid token.");
+            return result.Match(Results.Ok, error => Results.BadRequest(error.Desription));
         }).RequireRateLimiting("login-refresh");
 
         return endpoints;

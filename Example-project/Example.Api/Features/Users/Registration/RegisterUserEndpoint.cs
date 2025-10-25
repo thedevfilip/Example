@@ -15,7 +15,6 @@ internal static class RegisterUserEndpoint
             Result<RegisterUserResponse> result = await handler.HandleAsync(request);
 
             return result.Match(Results.Ok, error => Results.BadRequest(error.Desription));
-
         }).RequireRateLimiting("register");
 
         return endpoints;
