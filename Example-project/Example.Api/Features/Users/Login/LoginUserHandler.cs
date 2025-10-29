@@ -3,6 +3,7 @@ using Example.Domain.Interfaces;
 using Example.Domain.Primitives;
 using Example.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Example.Api.Features.Users.Login;
 
@@ -33,9 +34,14 @@ internal sealed class LoginUserHandler(
             return LoginUserErrors.InvalidCredentials;
         }
 
+        UserOrganization? userOrganization = await context
+            .Set<UserOrganization>()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.UserId == user.Id);
+
         IEnumerable<string> roles = await _userManager.GetRolesAsync(user);
 
-        string token = tokenProvider.Create(user, roles);
+        string token = tokenProvider.Create(user, roles, userOrganization?.OrganizationId);
 
         HttpContext httpContext = httpContextAccessor.HttpContext!;
 

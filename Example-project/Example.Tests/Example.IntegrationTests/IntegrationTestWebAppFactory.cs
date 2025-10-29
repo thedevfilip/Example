@@ -1,4 +1,5 @@
-﻿using Example.Infrastructure;
+﻿using Example.Domain.Contexts;
+using Example.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -36,9 +37,14 @@ public sealed class IntegrationTestWebAppFactory : WebApplicationFactory<Program
                 builder => builder.MigrationsAssembly("Example.Migrations"))
             .Options;
 
-        await using var dbContext = new AppDbContext(options);
+        await using AppDbContext dbContext = new(options, new TestOrganizationContext());
         await dbContext.Database.MigrateAsync();
     }
 
     public new async Task DisposeAsync() => await _sqlContainer.DisposeAsync();
+
+    private sealed class TestOrganizationContext : IOrganizationContext
+    {
+        public Guid OrganizationId => Guid.Empty;
+    }
 }

@@ -4,11 +4,11 @@ namespace Example.Infrastructure.Seeders;
 
 public sealed class RoleSeeder(RoleManager<IdentityRole<Guid>> roleManager)
 {
-    private static readonly string[] Roles = ["Admin", "Owner", "Manager", "User", "Guest"];
+    private static readonly string[] _roles = ["Admin", "Owner", "Manager", "User", "Guest"];
 
     public async Task SeedAsync()
     {
-        foreach (string role in Roles)
+        foreach (string role in _roles)
         {
             if (!await roleManager.RoleExistsAsync(role))
             {

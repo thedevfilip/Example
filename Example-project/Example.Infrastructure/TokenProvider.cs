@@ -10,18 +10,23 @@ namespace Example.Infrastructure;
 
 public sealed class TokenProvider(JwtOptions options)
 {
-    public string Create(User user, IEnumerable<string> roles)
+    public string Create(User user, IEnumerable<string> roles, Guid? organizationId = null)
     {
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(options.Key));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-        Claim[] claims =
+        List<Claim> claims =
         [
             new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email!),
             new(ClaimTypes.Name, user.UserName!),
             ..roles.Select(role => new Claim(ClaimTypes.Role, role))
         ];
+
+        if (organizationId.HasValue)
+        {
+            claims.Add(new("organizationId", organizationId.Value.ToString()));
+        }
 
         var token = new JwtSecurityToken(
             issuer: options.Issuer,
