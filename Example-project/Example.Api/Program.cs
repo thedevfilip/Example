@@ -1,6 +1,8 @@
 using Example.Api;
 using Example.Api.Contexts;
 using Example.Api.Features.Organizations.Registration;
+using Example.Api.Features.Projects.CreateProject;
+using Example.Api.Features.Projects.GetProject;
 using Example.Api.Features.Users.Info;
 using Example.Api.Features.Users.Login;
 using Example.Api.Features.Users.RefreshTokenLogin;
@@ -50,6 +52,9 @@ app.MapLoginUser();
 app.MapRefreshToken();
 app.MapUserInfo();
 app.MapRegisterOrganization();
+
+app.MapCreateProject();
+app.MapGetProject();
 
 await app.RunAsync();
 

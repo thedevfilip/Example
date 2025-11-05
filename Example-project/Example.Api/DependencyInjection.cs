@@ -1,6 +1,8 @@
 using System.Text;
 using System.Threading.RateLimiting;
 using Example.Api.Features.Organizations.Registration;
+using Example.Api.Features.Projects.CreateProject;
+using Example.Api.Features.Projects.GetProject;
 using Example.Api.Features.Users.Info;
 using Example.Api.Features.Users.Login;
 using Example.Api.Features.Users.RefreshTokenLogin;
@@ -84,6 +86,9 @@ internal static class DependencyInjection
         services.AddScoped<RefreshTokenHandler>();
         services.AddScoped<UserInfoHandler>();
         services.AddScoped<RegisterOrganizationHandler>();
+
+        services.AddScoped<CreateProjectHandler>();
+        services.AddScoped<GetProjectHandler>();
 
         services.AddHttpContextAccessor();
 
