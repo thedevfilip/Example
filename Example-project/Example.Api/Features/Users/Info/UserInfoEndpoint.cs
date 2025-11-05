@@ -13,7 +13,7 @@ internal static class UserInfoEndpoint
             [FromServices] UserInfoHandler handler) =>
         {
             Result<UserInfoResponse> result = await handler.HandleAsync(user);
-            return result.Match(Results.Ok, error => Results.BadRequest(error.Desription));
+            return result.Match(Results.Ok, error => Results.BadRequest(error));
         });
 
         return endpoints;

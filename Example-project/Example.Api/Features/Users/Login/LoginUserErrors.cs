@@ -4,5 +4,5 @@ namespace Example.Api.Features.Users.Login;
 
 internal static class LoginUserErrors
 {
-    internal static readonly Error InvalidCredentials = new("5", nameof(InvalidCredentials));
+    internal static readonly Error InvalidCredentials = new(nameof(InvalidCredentials), "Invalid credentials.");
 }

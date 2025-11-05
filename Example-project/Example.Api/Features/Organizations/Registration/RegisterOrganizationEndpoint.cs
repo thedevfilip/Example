@@ -1,3 +1,4 @@
+using Example.Domain.Primitives;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Example.Api.Features.Organizations.Registration;
@@ -10,9 +11,9 @@ internal static class CreateOrganizationEndpoint
             [FromServices] RegisterOrganizationHandler handler,
             [FromBody] RegisterOrganizationRequest request) =>
         {
-            RegisterOrganizationResponse response = await handler.HandleAsync(request);
+            Result<RegisterOrganizationResponse> result = await handler.HandleAsync(request);
 
-            return Results.Ok(response);
+            return result.Match(Results.Ok, error => Results.BadRequest(error));
         });
 
         return endpoints;

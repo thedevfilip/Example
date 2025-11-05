@@ -4,5 +4,5 @@ namespace Example.Api.Features.Users.Registration;
 
 internal static class RegisterUserErrors
 {
-    internal static readonly Error EmailTaken = new("2", nameof(EmailTaken));
+    internal static readonly Error EmailTaken = new(nameof(EmailTaken), "Email already in use");
 }
