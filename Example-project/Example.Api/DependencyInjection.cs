@@ -7,6 +7,8 @@ using Example.Api.Features.Users.Info;
 using Example.Api.Features.Users.Login;
 using Example.Api.Features.Users.RefreshTokenLogin;
 using Example.Api.Features.Users.Registration;
+using Example.Api.Middleware;
+using Example.Api.Options;
 using Example.Domain.Entities;
 using Example.Domain.Options;
 using Example.Infrastructure;
@@ -22,9 +24,10 @@ internal static class DependencyInjection
 {
     public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
     {
-        IConfigurationSection jwtSection = configuration.GetSection(Constants.Jwt);
+        IConfigurationSection jwtSection = configuration.GetSection(JwtOptions.SectionName);
 
         services.Configure<JwtOptions>(jwtSection);
+        services.Configure<RateLimitingOptions>(configuration.GetSection(RateLimitingOptions.SectionName));
 
         services.AddIdentity<User, IdentityRole<Guid>>(options =>
         {
@@ -51,7 +54,7 @@ internal static class DependencyInjection
                 ValidateIssuerSigningKey = true,
                 ValidIssuer = jwtSection[Constants.Issuer],
                 ValidAudience = jwtSection[Constants.Audience],
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection["Key"]!))
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSection[Constants.Key]!))
             });
 
         services.AddAuthorization(options =>
@@ -61,34 +64,35 @@ internal static class DependencyInjection
 
         services.AddRateLimiter(options =>
         {
+            RateLimitingOptions rateLimitingOptions = configuration.GetSection(RateLimitingOptions.SectionName).Get<RateLimitingOptions>()!;
+            
             options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 
-            options.AddPolicy("login-refresh", httpContext => RateLimitPartition.GetFixedWindowLimiter(
+            options.AddPolicy(Constants.LoginRefreshPolicy, httpContext => RateLimitPartition.GetFixedWindowLimiter(
                 partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
                 factory: _ => new FixedWindowRateLimiterOptions
                 {
-                    PermitLimit = 5,
-                    Window = TimeSpan.FromMinutes(1)
+                    PermitLimit = rateLimitingOptions.LoginLimit,
+                    Window = TimeSpan.FromMinutes(rateLimitingOptions.LoginWindowMinutes)
                 }));
 
-            options.AddPolicy("register", httpContext => RateLimitPartition.GetFixedWindowLimiter(
+            options.AddPolicy(Constants.RegisterPolicy, httpContext => RateLimitPartition.GetFixedWindowLimiter(
                 partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
                 factory: _ => new FixedWindowRateLimiterOptions
                 {
-                    PermitLimit = 3,
-                    Window = TimeSpan.FromHours(1)
+                    PermitLimit = rateLimitingOptions.RegisterLimit,
+                    Window = TimeSpan.FromHours(rateLimitingOptions.RegisterWindowHours)
                 }));
         });
 
 
-        services.AddScoped<RegisterUserHandler>();
-        services.AddScoped<LoginUserHandler>();
-        services.AddScoped<RefreshTokenHandler>();
-        services.AddScoped<UserInfoHandler>();
-        services.AddScoped<RegisterOrganizationHandler>();
-
-        services.AddScoped<CreateProjectHandler>();
-        services.AddScoped<GetProjectHandler>();
+        services.AddScoped<RegisterUserHandler>()
+            .AddScoped<LoginUserHandler>()
+            .AddScoped<RefreshTokenHandler>()
+            .AddScoped<UserInfoHandler>()
+            .AddScoped<RegisterOrganizationHandler>()
+            .AddScoped<CreateProjectHandler>()
+            .AddScoped<GetProjectHandler>();
 
         services.AddHttpContextAccessor();
 
@@ -96,5 +100,24 @@ internal static class DependencyInjection
         services.AddSingleton<TokenProvider>();
 
         return services;
+    }
+
+    public static WebApplication ConfigurePresentation(this WebApplication app)
+    {
+        app.UseHttpsRedirection()
+        .UseRateLimiter()
+        .UseAuthentication()
+        .UseAuthorization()
+        .UseMiddleware<TenantResolver>();
+
+        app.MapRegisterUser()
+        .MapLoginUser()
+        .MapRefreshToken()
+        .MapUserInfo()
+        .MapRegisterOrganization()
+        .MapCreateProject()
+        .MapGetProject();
+
+        return app;
     }
 }

@@ -1,13 +1,5 @@
 using Example.Api;
 using Example.Api.Contexts;
-using Example.Api.Features.Organizations.Registration;
-using Example.Api.Features.Projects.CreateProject;
-using Example.Api.Features.Projects.GetProject;
-using Example.Api.Features.Users.Info;
-using Example.Api.Features.Users.Login;
-using Example.Api.Features.Users.RefreshTokenLogin;
-using Example.Api.Features.Users.Registration;
-using Example.Api.Middleware;
 using Example.Domain.Contexts;
 using Example.Infrastructure;
 using Example.Infrastructure.Seeders;
@@ -38,23 +30,7 @@ using (IServiceScope scope = app.Services.CreateScope())
     await seeder.SeedAsync();
 }
 
-app.UseHttpsRedirection();
-
-app.UseRateLimiter();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.UseMiddleware<TenantResolver>();
-
-app.MapRegisterUser();
-app.MapLoginUser();
-app.MapRefreshToken();
-app.MapUserInfo();
-app.MapRegisterOrganization();
-
-app.MapCreateProject();
-app.MapGetProject();
+app.ConfigurePresentation();
 
 await app.RunAsync();
 

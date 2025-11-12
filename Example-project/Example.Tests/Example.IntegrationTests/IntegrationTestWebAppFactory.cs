@@ -15,6 +15,7 @@ public sealed class IntegrationTestWebAppFactory : WebApplicationFactory<Program
 
     protected override void ConfigureWebHost(IWebHostBuilder builder) =>
         builder
+        .UseEnvironment("Testing")
         .ConfigureTestServices(services =>
         {
             ServiceDescriptor? descriptor = services
