@@ -60,3 +60,17 @@ Example-Project/Example.Migrations/
 
 # Docker
 Example-Project/.env
+
+# Angular specific
+# Dependencies
+frontend/node_modules/
+frontend/npm-debug.log*
+frontend/yarn-error.log
+frontend/yarn.lock
+frontend/package-lock.json
+
+# Build outputs
+frontend/dist/
+
+# IDEs and editors
+frontend/.vscode/
