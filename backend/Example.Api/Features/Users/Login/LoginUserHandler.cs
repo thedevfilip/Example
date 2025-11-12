@@ -34,6 +34,7 @@ internal sealed class LoginUserHandler(
             return LoginUserErrors.InvalidCredentials;
         }
 
+        // TODO: User can be in multiple organizations
         UserOrganization? userOrganization = await context
             .Set<UserOrganization>()
             .AsNoTracking()
