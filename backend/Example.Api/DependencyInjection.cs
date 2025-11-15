@@ -85,7 +85,6 @@ internal static class DependencyInjection
                 }));
         });
 
-
         services.AddScoped<RegisterUserHandler>()
             .AddScoped<LoginUserHandler>()
             .AddScoped<RefreshTokenHandler>()
@@ -96,6 +95,13 @@ internal static class DependencyInjection
 
         services.AddHttpContextAccessor();
 
+        services.AddCors(options =>
+            options.AddPolicy(Constants.FrontendPolicy, policy =>
+                policy.WithOrigins("http://localhost:4200")
+                      .AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowCredentials()));
+
         services.AddSingleton(p => p.GetRequiredService<IOptions<JwtOptions>>().Value);
         services.AddSingleton<TokenProvider>();
 
@@ -105,6 +111,7 @@ internal static class DependencyInjection
     public static WebApplication ConfigurePresentation(this WebApplication app)
     {
         app.UseHttpsRedirection()
+        .UseCors(Constants.FrontendPolicy)
         .UseRateLimiter()
         .UseAuthentication()
         .UseAuthorization()
