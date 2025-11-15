@@ -1,0 +1,18 @@
+services:
+  example.web:
+    image: ${DOCKER_REGISTRY-}exampleweb
+    container_name: example.web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "4200:4200"
+    environment:
+      - NODE_ENV=development
+    networks:
+      - backend_examplenetwork
+
+networks:
+  backend_examplenetwork:
+    external: true
+    name: backend_examplenetwork

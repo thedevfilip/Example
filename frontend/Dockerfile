@@ -1,0 +1,19 @@
+# Development Dockerfile for Angular application
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Expose Angular dev server port
+EXPOSE 4200
+
+# Start Angular dev server with host binding for Docker
+CMD ["npm", "start", "--", "--host", "0.0.0.0", "--port", "4200", "--disable-host-check"]
