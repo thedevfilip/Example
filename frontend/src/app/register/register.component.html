@@ -1,70 +1,91 @@
-<div>
-  <h2>Register</h2>
+<div class="register-container">
+  <div class="register-card">
+    <h2 class="register-title">Create Account</h2>
 
-  <div *ngIf="successMessage">
-    <p>{{ successMessage }}</p>
-  </div>
-
-  <div *ngIf="errorMessage">
-    <p>{{ errorMessage }}</p>
-  </div>
-
-  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-    <div>
-      <label for="firstName">First Name:</label>
-      <input
-        type="text"
-        id="firstName"
-        formControlName="firstName"
-        placeholder="Enter your first name">
+    <div *ngIf="successMessage" class="message success-message">
+      {{ successMessage }}
     </div>
 
-    <div>
-      <label for="lastName">Last Name:</label>
-      <input
-        type="text"
-        id="lastName"
-        formControlName="lastName"
-        placeholder="Enter your last name">
+    <div *ngIf="errorMessage" class="message error-message">
+      {{ errorMessage }}
     </div>
 
-    <div>
-      <label for="email">Email:</label>
-      <input
-        type="email"
-        id="email"
-        formControlName="email"
-        placeholder="Enter your email">
-    </div>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <label for="firstName" class="form-label">First Name</label>
+        <input
+          type="text"
+          id="firstName"
+          class="form-input"
+          formControlName="firstName"
+          placeholder="Enter your first name">
+        <div *ngIf="getFieldError('firstName')" class="validation-error">
+          {{ getFieldError('firstName') }}
+        </div>
+      </div>
 
-    <div>
-      <label for="password">Password:</label>
-      <input
-        type="password"
-        id="password"
-        formControlName="password"
-        placeholder="Enter your password">
-    </div>
+      <div class="form-group">
+        <label for="lastName" class="form-label">Last Name</label>
+        <input
+          type="text"
+          id="lastName"
+          class="form-input"
+          formControlName="lastName"
+          placeholder="Enter your last name">
+        <div *ngIf="getFieldError('lastName')" class="validation-error">
+          {{ getFieldError('lastName') }}
+        </div>
+      </div>
 
-    <div>
-      <label for="confirmPassword">Confirm Password:</label>
-      <input
-        type="password"
-        id="confirmPassword"
-        formControlName="confirmPassword"
-        placeholder="Confirm your password">
-    </div>
+      <div class="form-group">
+        <label for="email" class="form-label">Email</label>
+        <input
+          type="email"
+          id="email"
+          class="form-input"
+          formControlName="email"
+          placeholder="Enter your email">
+        <div *ngIf="getFieldError('email')" class="validation-error">
+          {{ getFieldError('email') }}
+        </div>
+      </div>
 
-    <div>
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <input
+          type="password"
+          id="password"
+          class="form-input"
+          formControlName="password"
+          placeholder="Enter your password">
+        <div *ngIf="getFieldError('password')" class="validation-error">
+          {{ getFieldError('password') }}
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <input
+          type="password"
+          id="confirmPassword"
+          class="form-input"
+          formControlName="confirmPassword"
+          placeholder="Confirm your password">
+        <div *ngIf="getFieldError('confirmPassword')" class="validation-error">
+          {{ getFieldError('confirmPassword') }}
+        </div>
+      </div>
+
       <button 
         type="submit" 
+        class="submit-button"
         [disabled]="isSubmitting">
-        {{ isSubmitting ? 'Registering...' : 'Register' }}
+        {{ isSubmitting ? 'Creating Account...' : 'Create Account' }}
       </button>
-    </div>
-  </form>
+    </form>
 
-  <div>
-    <p>Already have an account? <a routerLink="/login">Login here</a></p>
+    <div class="login-link">
+      <p>Already have an account? <a routerLink="/login">Sign in here</a></p>
+    </div>
   </div>
 </div>

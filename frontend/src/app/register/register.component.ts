@@ -5,7 +5,8 @@ import { RegisterUser } from '../models/register-user.model';
 
 @Component({
   selector: 'app-register',
-  templateUrl: './register.component.html'
+  templateUrl: './register.component.html',
+  styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
   registerForm: FormGroup;
@@ -73,6 +74,48 @@ export class RegisterComponent {
           console.error('HTTP Error:', httpError);
         }
       });
+    } else {
+      this.markFormGroupTouched();
     }
+  }
+
+  private markFormGroupTouched() {
+    Object.keys(this.registerForm.controls).forEach(key => {
+      const control = this.registerForm.get(key);
+      control?.markAsTouched();
+    });
+  }
+
+  getFieldError(fieldName: string): string {
+    const field = this.registerForm.get(fieldName);
+    
+    if (field?.touched && field?.errors) {
+      if (field.errors['required']) {
+        return `${this.getFieldDisplayName(fieldName)} is required`;
+      }
+      if (field.errors['email']) {
+        return 'Please enter a valid email address';
+      }
+      if (field.errors['minlength']) {
+        const minLength = field.errors['minlength'].requiredLength;
+        return `${this.getFieldDisplayName(fieldName)} must be at least ${minLength} characters`;
+      }
+      if (field.errors['passwordMismatch']) {
+        return 'Passwords do not match';
+      }
+    }
+    
+    return '';
+  }
+
+  private getFieldDisplayName(fieldName: string): string {
+    const displayNames: { [key: string]: string } = {
+      firstName: 'First Name',
+      lastName: 'Last Name',
+      email: 'Email',
+      password: 'Password',
+      confirmPassword: 'Confirm Password'
+    };
+    return displayNames[fieldName] || fieldName;
   }
 }
