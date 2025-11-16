@@ -9,11 +9,14 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-# Copy source code
+# Install Angular CLI globally for development
+RUN npm install -g @angular/cli@15
+
+# Copy source code (will be overridden by volume in docker-compose)
 COPY . .
 
 # Expose Angular dev server port
 EXPOSE 4200
 
-# Start Angular dev server with host binding for Docker
-CMD ["npm", "start", "--", "--host", "0.0.0.0", "--port", "4200", "--disable-host-check"]
+# Start Angular dev server with hot reload configuration
+CMD ["npm", "run", "start:docker"]

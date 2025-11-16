@@ -9,6 +9,13 @@ services:
       - "4200:4200"
     environment:
       - NODE_ENV=development
+    volumes:
+      - ./src:/app/src:ro
+      - ./angular.json:/app/angular.json:ro
+      - ./tsconfig.json:/app/tsconfig.json:ro
+      - ./tsconfig.app.json:/app/tsconfig.app.json:ro
+      - ./package.json:/app/package.json:ro
+      - /app/node_modules
     networks:
       - backend_examplenetwork
 
