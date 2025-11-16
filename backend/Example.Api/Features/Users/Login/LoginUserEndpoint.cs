@@ -14,7 +14,7 @@ internal static class LoginUserEndpoint
         {
             Result<LoginUserResponse> result = await handler.HandleAsync(request);
 
-            return result.Match(Results.Ok, error => Results.BadRequest(error.Desription));
+            return result.Match(Results.Ok, error => Results.BadRequest(error));
         }).RequireRateLimiting("login-refresh");
 
         return endpoints;
