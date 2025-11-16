@@ -1,91 +1,65 @@
 <div class="register-container">
-  <div class="register-card">
-    <h2 class="register-title">Create Account</h2>
+  <mat-card class="register-card">
+    <mat-card-header>
+      <mat-card-title>Create Account</mat-card-title>
+    </mat-card-header>
 
-    <div *ngIf="successMessage" class="message success-message">
-      {{ successMessage }}
-    </div>
+    <mat-card-content>
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName" placeholder="Enter your first name">
+          <mat-error *ngIf="getFieldError('firstName')">
+            {{ getFieldError('firstName') }}
+          </mat-error>
+        </mat-form-field>
 
-    <div *ngIf="errorMessage" class="message error-message">
-      {{ errorMessage }}
-    </div>
+        <mat-form-field appearance="outline">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName" placeholder="Enter your last name">
+          <mat-error *ngIf="getFieldError('lastName')">
+            {{ getFieldError('lastName') }}
+          </mat-error>
+        </mat-form-field>
 
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-      <div class="form-group">
-        <label for="firstName" class="form-label">First Name</label>
-        <input
-          type="text"
-          id="firstName"
-          class="form-input"
-          formControlName="firstName"
-          placeholder="Enter your first name">
-        <div *ngIf="getFieldError('firstName')" class="validation-error">
-          {{ getFieldError('firstName') }}
-        </div>
-      </div>
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="Enter your email">
+          <mat-error *ngIf="getFieldError('email')">
+            {{ getFieldError('email') }}
+          </mat-error>
+        </mat-form-field>
 
-      <div class="form-group">
-        <label for="lastName" class="form-label">Last Name</label>
-        <input
-          type="text"
-          id="lastName"
-          class="form-input"
-          formControlName="lastName"
-          placeholder="Enter your last name">
-        <div *ngIf="getFieldError('lastName')" class="validation-error">
-          {{ getFieldError('lastName') }}
-        </div>
-      </div>
+        <mat-form-field appearance="outline">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password" placeholder="Enter your password">
+          <mat-error *ngIf="getFieldError('password')">
+            {{ getFieldError('password') }}
+          </mat-error>
+        </mat-form-field>
 
-      <div class="form-group">
-        <label for="email" class="form-label">Email</label>
-        <input
-          type="email"
-          id="email"
-          class="form-input"
-          formControlName="email"
-          placeholder="Enter your email">
-        <div *ngIf="getFieldError('email')" class="validation-error">
-          {{ getFieldError('email') }}
-        </div>
-      </div>
+        <mat-form-field appearance="outline">
+          <mat-label>Confirm Password</mat-label>
+          <input matInput type="password" formControlName="confirmPassword" placeholder="Confirm your password">
+          <mat-error *ngIf="getFieldError('confirmPassword')">
+            {{ getFieldError('confirmPassword') }}
+          </mat-error>
+        </mat-form-field>
 
-      <div class="form-group">
-        <label for="password" class="form-label">Password</label>
-        <input
-          type="password"
-          id="password"
-          class="form-input"
-          formControlName="password"
-          placeholder="Enter your password">
-        <div *ngIf="getFieldError('password')" class="validation-error">
-          {{ getFieldError('password') }}
-        </div>
-      </div>
+        <button 
+          mat-raised-button 
+          color="primary" 
+          type="submit" 
+          class="submit-button"
+          [disabled]="isSubmitting">
+          <mat-icon *ngIf="isSubmitting">hourglass_empty</mat-icon>
+          {{ isSubmitting ? 'Creating Account...' : 'Create Account' }}
+        </button>
+      </form>
+    </mat-card-content>
 
-      <div class="form-group">
-        <label for="confirmPassword" class="form-label">Confirm Password</label>
-        <input
-          type="password"
-          id="confirmPassword"
-          class="form-input"
-          formControlName="confirmPassword"
-          placeholder="Confirm your password">
-        <div *ngIf="getFieldError('confirmPassword')" class="validation-error">
-          {{ getFieldError('confirmPassword') }}
-        </div>
-      </div>
-
-      <button 
-        type="submit" 
-        class="submit-button"
-        [disabled]="isSubmitting">
-        {{ isSubmitting ? 'Creating Account...' : 'Create Account' }}
-      </button>
-    </form>
-
-    <div class="login-link">
-      <p>Already have an account? <a routerLink="/login">Sign in here</a></p>
-    </div>
-  </div>
+    <mat-card-actions>
+      <p>Already have an account? <a routerLink="/login" mat-button>Sign in here</a></p>
+    </mat-card-actions>
+  </mat-card>
 </div>

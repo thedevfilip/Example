@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { Result } from '../models/result.model';
+import { map } from 'rxjs/operators';
+import { Error } from '../models/error.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,11 +19,27 @@ export class ApiService {
     });
   }
 
-  get<T>(endpoint: string): Observable<Result<T>> {
-    return this.http.get<Result<T>>(`${this.apiUrl}${endpoint}`, { headers: this.getHeaders() });
+  get<T>(endpoint: string): Observable<T> {
+    return this.http.get<T>(`${this.apiUrl}${endpoint}`, { headers: this.getHeaders() })
+      .pipe(this.handleResponse());
   }
 
-  post<T>(endpoint: string, data: any): Observable<Result<T>> {
-    return this.http.post<Result<T>>(`${this.apiUrl}${endpoint}`, data, { headers: this.getHeaders() });
+  post<T>(endpoint: string, data: any): Observable<T> {
+    return this.http.post<T>(`${this.apiUrl}${endpoint}`, data, { headers: this.getHeaders() })
+      .pipe(this.handleResponse());
+  }
+
+  private handleResponse<T>() {
+    return (source: Observable<T>) => source.pipe(
+      map(response => response),
+      catchError((httpError: HttpErrorResponse): Observable<never> => {
+        const error: Error = {
+          code: httpError.error?.code || `HTTP_${httpError.status}`,
+          description: httpError.error?.description || 'An error occurred'
+        };
+        
+        return throwError(() => error);
+      })
+    );
   }
 }

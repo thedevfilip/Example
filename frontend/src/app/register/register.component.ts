@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
-import { AuthService } from '../services/auth.service';
-import { RegisterUser } from '../models/register-user.model';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { RegisterUserRequest, RegisterUserResponse } from '../models/register-user';
+import { Error } from '../models/error.model';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-register',
@@ -11,16 +13,15 @@ import { RegisterUser } from '../models/register-user.model';
 export class RegisterComponent {
   registerForm: FormGroup;
   isSubmitting = false;
-  successMessage = '';
-  errorMessage = '';
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService
+    private apiService: ApiService,
+    private snackBar: MatSnackBar
   ) {
     this.registerForm = this.fb.group({
-      firstName: ['', [Validators.required, Validators.minLength(2)]],
-      lastName: ['', [Validators.required, Validators.minLength(2)]],
+      firstName: ['', [Validators.required, Validators.minLength(3)]],
+      lastName: ['', [Validators.required, Validators.minLength(3)]],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', [Validators.required]]
@@ -44,34 +45,33 @@ export class RegisterComponent {
   onSubmit() {
     if (this.registerForm.valid) {
       this.isSubmitting = true;
-      this.errorMessage = '';
-      this.successMessage = '';
 
-      const registerData: RegisterUser = this.registerForm.value;
+      const registerData: RegisterUserRequest = this.registerForm.value;
 
-      this.authService.register({
+      this.apiService.post<RegisterUserResponse>('/users/register', {
         firstName: registerData.firstName,
         lastName: registerData.lastName,
         email: registerData.email,
         password: registerData.password
-      }).subscribe({
-        next: (result) => {
+      })
+      .subscribe({
+        next: () => {
           this.isSubmitting = false;
           
-          result.match(
-            () => {
-              this.successMessage = `Registration successful!`;
-              this.registerForm.reset();
-            },
-            (error) => {
-              this.errorMessage = error.description || 'Registration failed';
-            }
-          );
+          this.snackBar.open('Registration successful!', 'Close', {
+            duration: 5000,
+            panelClass: ['success-snackbar']
+          });
+          this.registerForm.reset();
         },
-        error: (httpError) => {
+        error: (error: Error) => {
           this.isSubmitting = false;
-          this.errorMessage = 'An unexpected error occurred during registration';
-          console.error('HTTP Error:', httpError);
+          console.log('Registration error:', error);
+          
+          this.snackBar.open(error.description || 'Registration failed', 'Close', {
+            duration: 5000,
+            panelClass: ['error-snackbar']
+          });
         }
       });
     } else {
